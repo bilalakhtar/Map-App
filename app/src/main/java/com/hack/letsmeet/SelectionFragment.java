@@ -23,7 +23,6 @@ public class SelectionFragment  extends Fragment{
                 container, false);
 
 
-
         return view;
     }
 
