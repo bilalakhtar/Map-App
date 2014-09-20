@@ -172,7 +172,11 @@ public class MapsActivity extends FragmentActivity {
      */
     private void setUpMap() {
 
-        LatLng userLatLng = new LatLng(userLocation.getLatitude(),userLocation.getLongitude());
+        if (userLocation == null) {
+            return;
+        }
+
+        LatLng userLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
         mMap.addMarker(new MarkerOptions().position(new LatLng(userLocation.getLatitude(),
                 userLocation.getLongitude())).title("Marker"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng,14));
