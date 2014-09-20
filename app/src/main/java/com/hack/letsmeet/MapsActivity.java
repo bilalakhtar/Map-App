@@ -13,16 +13,17 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
+import com.facebook.HttpMethod;
+import com.facebook.Request;
+import com.facebook.Response;
+import com.facebook.Session;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsActivity extends FragmentActivity {
@@ -72,8 +73,24 @@ public class MapsActivity extends FragmentActivity {
             }
         };
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
+
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
+
+        /* make the API call */
+       /* new Request(
+                Session.getActiveSession(),
+                "/me/friends",
+                null,
+                HttpMethod.GET,
+                new Request.Callback() {
+                    @Override
+                    public void onCompleted(Response response) {
+                    /* handle the result
+                    System.out.println(response.toString());
+                    }
+                }
+        ).executeAsync();*/
     }
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
