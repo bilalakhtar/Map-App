@@ -52,15 +52,6 @@ public class MapsActivity extends FragmentActivity {
                 R.layout.drawer_list_item,listItems));
         drawerList.setOnItemClickListener(new DrawerItemClickListener());
 
-        Request.newGraphPathRequest(Session.getActiveSession(), "me", new Request.Callback(){
-
-            @Override
-            public void onCompleted(Response response) {
-                Log.d("MainActivity", response.toString());
-            }
-        }).executeAsync();
-
-
         actionBarDrawerToggle = new ActionBarDrawerToggle(
                 this,                  /* host Activity */
                 drawerLayout,         /* DrawerLayout object */
