@@ -20,6 +20,8 @@ import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
 
+import org.json.JSONObject;
+
 import java.security.MessageDigest;
 import java.util.ArrayList;
 
@@ -60,6 +62,7 @@ public class MainActivity extends Activity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
         uiHelper = new UiLifecycleHelper(this, callback);
         uiHelper.onCreate(savedInstanceState);
         FragmentManager fm = getFragmentManager();
@@ -101,7 +104,6 @@ public class MainActivity extends Activity {
              //   showFragment(SELECTION, false);
 
                 signupAndRegisterDevice();
-                launchMap();
 
             } else if (state.isClosed()) {
                 // If the session state is closed:
@@ -112,15 +114,32 @@ public class MainActivity extends Activity {
     }
 
     private void signupAndRegisterDevice() {
-        RestApi restApi = RestApi.getInstance();
+        final RestApi restApi = RestApi.getInstance();
 
-        Request.newGraphPathRequest(Session.getActiveSession(), "me", new Request.Callback(){
+        Request request = Request.newGraphPathRequest(Session.getActiveSession(), "me", new Request.Callback(){
 
             @Override
             public void onCompleted(Response response) {
                 Log.d("MainActivity", response.toString());
+
+                String userid = (String) response.getGraphObject().getProperty("id");
+                String token = Session.getActiveSession().getAccessToken();
+
+                restApi.setAuth(userid, token);
+
+                /*restApi.request("test-auth", RestApi.Method.GET, new JSONObject(), new com.android.volley.Response.Listener() {
+                    @Override
+                    public void onResponse(Object o) {
+                        Log.d("MainActivity", o.toString());
+                        MainActivity.this.launchPicker();
+                    }
+                });*/
+
+                MainActivity.this.launchPicker();
             }
-        }).executeAsync();
+        });
+
+        Request.executeBatchAsync(request);
     }
 
     @Override
@@ -173,9 +192,11 @@ public class MainActivity extends Activity {
     }
 
 
-    private void launchMap(){
+    private final void launchPicker(){
         finish();
-        startActivity(new Intent(this, PickerActivity.class));
+
+        Intent newIntent = new Intent(MainActivity.this, PickerActivity.class);
+        startActivity(newIntent);
     }
 
 }

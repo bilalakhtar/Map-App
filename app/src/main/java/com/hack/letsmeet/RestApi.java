@@ -1,5 +1,7 @@
 package com.hack.letsmeet;
 
+import android.util.Log;
+
 import com.android.volley.*;
 import com.android.volley.toolbox.JsonObjectRequest;
 
@@ -12,7 +14,7 @@ import java.util.HashMap;
  */
 public class RestApi {
     private static RestApi instance = null;
-    private static final String BASE_URL="http://localhost:8080/";
+    private static final String BASE_URL="http://10.20.182.3:8080/";
 
     public enum Method {
         GET, POST
@@ -34,11 +36,18 @@ public class RestApi {
     }
 
     public void request(String endpoint, Method method, JSONObject params, Response.Listener responseHandler) {
+        Response.ErrorListener errorListener = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.e("RestApi", volleyError.getMessage());
+            }
+        };
+
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,
                 BASE_URL+endpoint,
                 params,
                 responseHandler,
-                null) {
+                errorListener) {
             @Override
             public HashMap<String, String> getHeaders() {
                 HashMap<String, String> params = new HashMap<String, String>();
@@ -55,7 +64,7 @@ public class RestApi {
                     BASE_URL+endpoint,
                     params,
                     responseHandler,
-                    null){
+                    errorListener){
                 @Override
                 public HashMap<String, String> getHeaders() {
                     HashMap<String, String> params = new HashMap<String, String>();
