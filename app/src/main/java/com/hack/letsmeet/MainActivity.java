@@ -1,28 +1,26 @@
 package com.hack.letsmeet;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
-import android.app.FragmentManager;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 
-import java.util.ArrayList;
-
 /**
  * Created by Colin on 2014-09-20.
  */
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity {
 
     private static final int SPLASH = 0;
     private static final int SELECTION = 1;
     private static final int FRAGMENT_COUNT = SELECTION + 1;
     private boolean isResumed = false;
-    private ArrayList<Fragment> fragments = new ArrayList<Fragment>();
+    private Fragment[] fragments = new Fragment[FRAGMENT_COUNT];
     private Session.StatusCallback callback =
             new Session.StatusCallback() {
                 @Override
@@ -40,21 +38,27 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main);
         uiHelper = new UiLifecycleHelper(this, callback);
         uiHelper.onCreate(savedInstanceState);
-        FragmentManager fm = getFragmentManager();
-        fragments.add(SPLASH, fm.findFragmentById(R.id.splashFragment));
-        fragments.add(SELECTION, fm.findFragmentById(R.id.selectionFragment));
+        FragmentManager fm = getSupportFragmentManager();
+        fragments[SPLASH] = fm.findFragmentById(R.id.splashFragment);
+        fragments[SELECTION] = fm.findFragmentById(R.id.selectionFragment);
 
         FragmentTransaction transaction = fm.beginTransaction();
-        for (int i = 0; i < fragments.size(); i++) {
-            transaction.hide(fragments.get(i));
+        for (int i = 0; i < fragments.length; i++) {
+            transaction.hide(fragments[i]);
         }
         transaction.commit();
     }
 
     private void showFragment(int fragmentIndex, boolean addToBackStack) {
-        FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
-        transaction.show(fragments.get(fragmentIndex));
+        for (int i = 0; i < fragments.length; i++) {
+            if (i == fragmentIndex) {
+                transaction.show(fragments[i]);
+            } else {
+                transaction.hide(fragments[i]);
+            }
+        }
         if (addToBackStack) {
             transaction.addToBackStack(null);
         }
@@ -64,7 +68,7 @@ public class MainActivity extends Activity {
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
         // Only make changes if the activity is visible
         if (isResumed) {
-            FragmentManager manager = getFragmentManager();
+            FragmentManager manager = getSupportFragmentManager();
             // Get the number of entries in the back stack
             int backStackSize = manager.getBackStackEntryCount();
             // Clear the back stack
@@ -74,8 +78,8 @@ public class MainActivity extends Activity {
             if (state.isOpened()) {
                 // If the session state is open:
                 // Show the authenticated fragment
-             //   showFragment(SELECTION, false);
-                launchMap();
+                showFragment(SELECTION, false);
+                //launchMap();
 
             } else if (state.isClosed()) {
                 // If the session state is closed:
@@ -99,7 +103,7 @@ public class MainActivity extends Activity {
         isResumed = false;
     }
 
-    /*@Override
+    @Override
     protected void onResumeFragments() {
         super.onResumeFragments();
         Session session = Session.getActiveSession();
@@ -107,13 +111,14 @@ public class MainActivity extends Activity {
         if (session != null && session.isOpened()) {
             // if the session is already open,
             // try to show the selection fragment
-           launchMap();
+          /* launchMap();*/
+            showFragment(SELECTION, false);
         } else {
             // otherwise present the splash screen
             // and ask the person to login.
             showFragment(SPLASH, false);
         }
-    }*/
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

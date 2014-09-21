@@ -24,7 +24,10 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.HashMap;
 
 public class MapsActivity extends FragmentActivity {
 
@@ -35,6 +38,9 @@ public class MapsActivity extends FragmentActivity {
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private String[] listItems = {"Food"};
+    private HashMap<String, Marker> markerMap = new HashMap<String, Marker>();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,6 +97,15 @@ public class MapsActivity extends FragmentActivity {
                     }
                 }
         ).executeAsync();*/
+    }
+
+    private void addMarker(LatLng latLng, String name){
+
+        Marker marker = mMap.addMarker(new MarkerOptions().position(latLng).title(name).snippet(name + " /n status is awesome"));
+
+        markerMap.put(name, marker);
+
+
     }
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
