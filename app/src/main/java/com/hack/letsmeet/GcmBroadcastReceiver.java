@@ -29,13 +29,15 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
 
         if (messageType.equals(GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE)) {
             Log.d("GcmBroadcastReceiver", stuff.toString());
+            String notType = stuff.getString("type");
             if (stuff.getString("type").equals("MeetupInitiated")) {
                 sendNotification(context, stuff.getString("type"), stuff.getString("meeting"));
             } else {
                 Intent newIntent = new Intent();
+                String meetingString = stuff.getString("meeting");
 
                 try {
-                    MapsActivity.addMarkersForMeeting(new JSONObject(stuff.getString("meeting")));
+                    MapsActivity.addMarkersForMeeting(new JSONObject(meetingString));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -52,12 +54,13 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
                 context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         Intent intent = new Intent(context, MapsActivity.class);
+        intent.setAction("com.hack.letsmeet.MeetupInitiated");
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.putExtra("isInitiated", true);
         intent.putExtra("meeting", meeting);
-        intent.setAction("com.hack.letsmeet.MeetupInitiated");
 
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
-                intent, 0);
+                intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)

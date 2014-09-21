@@ -69,7 +69,7 @@ public class MapsActivity extends FragmentActivity {
 
         setUpMapIfNeeded();
 
-        places.placeSearch(userLocation.getLatitude(), userLocation.getLongitude(), list, 200, mMap, this);
+        //places.placeSearch(userLocation.getLatitude(), userLocation.getLongitude(), list, 200, mMap, this);
 
 
         drawerList = (ListView) findViewById(R.id.left_drawer);
@@ -123,19 +123,14 @@ public class MapsActivity extends FragmentActivity {
         ).executeAsync();*/
 
         //call places API
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent)
-    {
-        super.onNewIntent(intent);
+        Intent intent = getIntent();
         try {
             JSONObject meeting = new JSONObject(intent.getStringExtra("meeting"));
             if (meeting != null) {
                 addMarkersForMeeting(meeting);
             }
 
-            if (intent.getBooleanExtra("isInitiated", false)) {
+            if (intent.getBooleanExtra("isInitiated", false) == true) {
                 // Send our location to server
 
                 JSONObject coords = new JSONObject();
@@ -160,6 +155,13 @@ public class MapsActivity extends FragmentActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent)
+    {
+        super.onNewIntent(intent);
+
     }
 
     public static void addMarker(LatLng latLng, String name){

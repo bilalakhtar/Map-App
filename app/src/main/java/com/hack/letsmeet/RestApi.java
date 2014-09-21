@@ -16,7 +16,7 @@ import java.util.HashMap;
  */
 public class RestApi {
     private static RestApi instance = null;
-    private static final String BASE_URL="http://10.21.217.205:8080/";
+    private static final String BASE_URL="http://htn-letsmeet2.cloudapp.net:8080/";
 
     public enum Method {
         GET, POST
