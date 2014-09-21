@@ -22,12 +22,15 @@ import com.facebook.FacebookException;
 import com.facebook.HttpMethod;
 import com.facebook.Request;
 import com.facebook.Session;
+import com.facebook.model.GraphObject;
 import com.facebook.widget.FriendPickerFragment;
 import com.facebook.widget.PickerFragment;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -47,6 +50,10 @@ public class PickerActivity extends FragmentActivity {
     public static final String PROPERTY_REG_ID = "registration_id";
     private static final String PROPERTY_APP_VERSION = "appVersion";
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+
+    private String m_name;
+    private String m_id;
+
 
     GoogleCloudMessaging gcm;
     String regid;
@@ -76,7 +83,6 @@ public class PickerActivity extends FragmentActivity {
         Fragment fragmentToShow = null;
         Uri intentUri = getIntent().getData();
 
-/*
         new Request(
                 Session.getActiveSession(),
                 "/me/friends",
@@ -85,10 +91,25 @@ public class PickerActivity extends FragmentActivity {
                 new Request.Callback() {
                     @Override
                     public void onCompleted(com.facebook.Response response) {
-                       //response.getGraphObject().getPropertyAsList("user_friends","user_profile"));
+                     GraphObject graphObject  = response.getGraphObject();
+                     JSONArray data = (JSONArray) graphObject.getProperty("data");
+
+
+
+                        try {
+                            data.getJSONObject(0).get("name");
+
+                        }catch (JSONException e){
+
+                        }
+                        /* m_name = name;
+                         m_id = userId;
+
+    */
+                        Log.d("g", data.toString());
                     }
                 }
-        ).executeAsync();*/
+        ).executeAsync();
 
         RestApi.getInstance()
                 .request(this, "test-auth", RestApi.Method.GET, new JSONObject(), new com.android.volley.Response.Listener() {
