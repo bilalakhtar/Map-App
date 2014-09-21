@@ -68,11 +68,6 @@ public class MapsActivity extends FragmentActivity {
         places.placeSearch(userLocation.getLatitude(), userLocation.getLongitude(), list,200,mMap, this);
 
 
-
-
-
-
-
         drawerList = (ListView) findViewById(R.id.left_drawer);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerList.setAdapter(new ArrayAdapter<String>(this,
@@ -184,7 +179,14 @@ public class MapsActivity extends FragmentActivity {
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView parent, View view, int position, long id) {
-            //selectItem(position);
+            selectItem(position);
+        }
+
+        private void selectItem(int position) {
+            Marker marker = markerMap.get(places.placeNames.get(position));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(),18));
+            drawerLayout.closeDrawer(drawerList);
+            marker.showInfoWindow();
         }
     }
     /**
@@ -236,6 +238,6 @@ public class MapsActivity extends FragmentActivity {
 
         userMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(userLocation.getLatitude(),
                 userLocation.getLongitude())).title("Me"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng,14));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng,18));
     }
 }

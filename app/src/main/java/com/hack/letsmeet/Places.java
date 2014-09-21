@@ -256,7 +256,7 @@ public class Places {
                placeNames.add(name);
            }
 
-
+            mapActivityContext.refreshAdapter();
            mapActivityContext.userMarker.showInfoWindow();
 
 
