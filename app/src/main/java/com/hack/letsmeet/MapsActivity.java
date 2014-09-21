@@ -48,7 +48,7 @@ public class MapsActivity extends FragmentActivity {
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private String[] listItems = {"Food"};
     private Places places;
-    public Marker userMarker;
+    public static Marker userMarker;
     public static HashMap<String, Marker> markerMap = new HashMap<String, Marker>();
 
 
