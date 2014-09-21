@@ -112,6 +112,8 @@ public class PickerActivity extends ListActivity {
                         }
 
                         Log.d("g", data.toString());
+                        listAdapter.clear();
+                        listAdapter.addAll(friendsList);
                         listAdapter.notifyDataSetChanged();
                     }
                 }
