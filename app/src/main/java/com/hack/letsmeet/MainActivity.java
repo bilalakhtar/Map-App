@@ -1,26 +1,38 @@
 package com.hack.letsmeet;
 
+import android.app.Activity;
 import android.content.Intent;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
+import android.app.FragmentManager;
+import android.util.Base64;
+import android.util.Log;
 
+import com.facebook.Request;
+import com.facebook.RequestAsyncTask;
+import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
+import com.facebook.model.GraphUser;
+
+import java.security.MessageDigest;
+import java.util.ArrayList;
 
 /**
  * Created by Colin on 2014-09-20.
  */
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends Activity {
 
     private static final int SPLASH = 0;
     private static final int SELECTION = 1;
     private static final int FRAGMENT_COUNT = SELECTION + 1;
     private boolean isResumed = false;
-    private Fragment[] fragments = new Fragment[FRAGMENT_COUNT];
+    private ArrayList<Fragment> fragments = new ArrayList<Fragment>();
     private Session.StatusCallback callback =
             new Session.StatusCallback() {
                 @Override
@@ -34,31 +46,39 @@ public class MainActivity extends FragmentActivity {
     private UiLifecycleHelper uiHelper;
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo("com.hack.letsmeet", PackageManager.GET_SIGNATURES);
+
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (Exception e) {
+            Log.wtf("KeyHash", "OMG IT DIDn't WORK!");
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         uiHelper = new UiLifecycleHelper(this, callback);
         uiHelper.onCreate(savedInstanceState);
-        FragmentManager fm = getSupportFragmentManager();
-        fragments[SPLASH] = fm.findFragmentById(R.id.splashFragment);
-        fragments[SELECTION] = fm.findFragmentById(R.id.selectionFragment);
+        FragmentManager fm = getFragmentManager();
+        fragments.add(SPLASH, fm.findFragmentById(R.id.splashFragment));
+        fragments.add(SELECTION, fm.findFragmentById(R.id.selectionFragment));
 
         FragmentTransaction transaction = fm.beginTransaction();
-        for (int i = 0; i < fragments.length; i++) {
-            transaction.hide(fragments[i]);
+        for (int i = 0; i < fragments.size(); i++) {
+            transaction.hide(fragments.get(i));
         }
+
+        transaction.show(fragments.get(0));
         transaction.commit();
     }
 
     private void showFragment(int fragmentIndex, boolean addToBackStack) {
-        FragmentManager fm = getSupportFragmentManager();
+        FragmentManager fm = getFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
-        for (int i = 0; i < fragments.length; i++) {
-            if (i == fragmentIndex) {
-                transaction.show(fragments[i]);
-            } else {
-                transaction.hide(fragments[i]);
-            }
-        }
+        transaction.show(fragments.get(fragmentIndex));
         if (addToBackStack) {
             transaction.addToBackStack(null);
         }
@@ -68,7 +88,7 @@ public class MainActivity extends FragmentActivity {
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
         // Only make changes if the activity is visible
         if (isResumed) {
-            FragmentManager manager = getSupportFragmentManager();
+            FragmentManager manager = getFragmentManager();
             // Get the number of entries in the back stack
             int backStackSize = manager.getBackStackEntryCount();
             // Clear the back stack
@@ -78,8 +98,9 @@ public class MainActivity extends FragmentActivity {
             if (state.isOpened()) {
                 // If the session state is open:
                 // Show the authenticated fragment
-                showFragment(SELECTION, false);
-                //launchMap();
+             //   showFragment(SELECTION, false);
+                
+                launchMap();
 
             } else if (state.isClosed()) {
                 // If the session state is closed:
@@ -103,7 +124,7 @@ public class MainActivity extends FragmentActivity {
         isResumed = false;
     }
 
-    @Override
+    /*@Override
     protected void onResumeFragments() {
         super.onResumeFragments();
         Session session = Session.getActiveSession();
@@ -111,14 +132,13 @@ public class MainActivity extends FragmentActivity {
         if (session != null && session.isOpened()) {
             // if the session is already open,
             // try to show the selection fragment
-          /* launchMap();*/
-            showFragment(SELECTION, false);
+           launchMap();
         } else {
             // otherwise present the splash screen
             // and ask the person to login.
             showFragment(SPLASH, false);
         }
-    }
+    }*/
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -141,7 +161,8 @@ public class MainActivity extends FragmentActivity {
 
 
     private void launchMap(){
-        startActivity(new Intent(this, PickerActivity.class));
+        finish();
+        startActivity(new Intent(this, MapsActivity.class));
     }
 
 }

@@ -8,6 +8,7 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -56,6 +57,14 @@ public class MapsActivity extends FragmentActivity {
         drawerList.setAdapter(new ArrayAdapter<String>(this,
                 R.layout.drawer_list_item,listItems));
         drawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+        Request.newGraphPathRequest(Session.getActiveSession(), "me", new Request.Callback(){
+
+            @Override
+            public void onCompleted(Response response) {
+                Log.d("MainActivity", response.toString());
+            }
+        }).executeAsync();
 
 
         actionBarDrawerToggle = new ActionBarDrawerToggle(
