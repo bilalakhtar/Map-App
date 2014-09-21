@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 public class MapsActivity extends FragmentActivity {
 
@@ -42,6 +43,7 @@ public class MapsActivity extends FragmentActivity {
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private String[] listItems = {"Food"};
+    public Marker userMarker;
     public static HashMap<String, Marker> markerMap = new HashMap<String, Marker>();
 
 
@@ -105,7 +107,7 @@ public class MapsActivity extends FragmentActivity {
         Places places = new Places();
         List<String> list = new ArrayList<String>();
         list.add("food");
-        places.placeSearch(userLocation.getLatitude(), userLocation.getLongitude(), list,1500,mMap);
+        places.placeSearch(userLocation.getLatitude(), userLocation.getLongitude(), list,1500,mMap, this);
     }
 
     public static void addMarker(LatLng latLng, String name){
@@ -122,6 +124,8 @@ public class MapsActivity extends FragmentActivity {
 
     public static void addMarker(LatLng latLng, String name, String snippet, float color){
         Marker marker = mMap.addMarker(new MarkerOptions().position(latLng).title(name).snippet(snippet).icon(BitmapDescriptorFactory.defaultMarker(color)));
+
+        markerMap.put(name, marker);
     }
 
     @Override
@@ -209,8 +213,10 @@ public class MapsActivity extends FragmentActivity {
         }
 
         LatLng userLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
-        mMap.addMarker(new MarkerOptions().position(new LatLng(userLocation.getLatitude(),
-                userLocation.getLongitude())).title("Marker"));
+
+
+        userMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(userLocation.getLatitude(),
+                userLocation.getLongitude())).title("Me"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng,14));
     }
 }

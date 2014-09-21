@@ -1,5 +1,6 @@
 package com.hack.letsmeet;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Base64;
@@ -24,6 +25,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Colin on 2014-09-20.
@@ -33,15 +36,19 @@ public class Places {
     private static final String baseURI = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?";
     private static final String API_KEY = "AIzaSyBgzXDHVUbDBzZSbfI-q5EcoiMFmNpWBxw";
 
+
+    private MapsActivity mapActivityContext;
     public List<HashMap<String,String>> placeData = new ArrayList<HashMap<String, String>>();
+    public List<String> placeNames = new ArrayList<String>();
     private GoogleMap m_map;
 
 // JSON:  https://maps.googleapis.com/maps/api/place/nearbysearch/json?
 // location=-33.8670522,151.1957362&radius=500&types=food&name=cruise&key=AddYourOwnKeyHere
 
-    public void placeSearch(double lat, double lon, List<String> types, int radiusInMetres, GoogleMap map){
+    public void placeSearch(double lat, double lon, List<String> types, int radiusInMetres, GoogleMap map, MapsActivity context){
 
         m_map =map;
+        mapActivityContext = context;
 
         String urlString = baseURI;
 
@@ -246,7 +253,13 @@ public class Places {
 
                //overload with snippet ect later
                MapsActivity.addMarker(new LatLng(lat, lng), name, vicinity, BitmapDescriptorFactory.HUE_VIOLET);
+               placeNames.add(name);
            }
+
+
+           mapActivityContext.userMarker.showInfoWindow();
+
+
 
        }
     }
