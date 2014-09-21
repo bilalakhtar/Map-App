@@ -4,13 +4,23 @@ import android.app.Activity;
 import android.content.Intent;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.Bundle;
 import android.app.FragmentManager;
+import android.util.Base64;
+import android.util.Log;
 
+import com.facebook.Request;
+import com.facebook.RequestAsyncTask;
+import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
+import com.facebook.model.GraphUser;
 
+import java.security.MessageDigest;
 import java.util.ArrayList;
 
 /**
@@ -36,6 +46,18 @@ public class MainActivity extends Activity {
     private UiLifecycleHelper uiHelper;
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo("com.hack.letsmeet", PackageManager.GET_SIGNATURES);
+
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (Exception e) {
+            Log.wtf("KeyHash", "OMG IT DIDn't WORK!");
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         uiHelper = new UiLifecycleHelper(this, callback);
@@ -48,6 +70,8 @@ public class MainActivity extends Activity {
         for (int i = 0; i < fragments.size(); i++) {
             transaction.hide(fragments.get(i));
         }
+
+        transaction.show(fragments.get(0));
         transaction.commit();
     }
 
@@ -75,6 +99,7 @@ public class MainActivity extends Activity {
                 // If the session state is open:
                 // Show the authenticated fragment
              //   showFragment(SELECTION, false);
+                
                 launchMap();
 
             } else if (state.isClosed()) {
@@ -136,7 +161,8 @@ public class MainActivity extends Activity {
 
 
     private void launchMap(){
-        startActivity(new Intent(this, PickerActivity.class));
+        finish();
+        startActivity(new Intent(this, MapsActivity.class));
     }
 
 }
