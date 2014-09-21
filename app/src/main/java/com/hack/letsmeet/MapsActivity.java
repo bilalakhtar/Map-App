@@ -201,7 +201,7 @@ public class MapsActivity extends FragmentActivity {
         if (meeting.getJSONObject("meetupLocation") != null) {
             JSONObject loc = meeting.getJSONObject("meetupLocation");
             LatLng latlng = new LatLng(loc.getDouble("lat"), loc.getDouble("lon"));
-            addMarker(latlng, "Meetup location");
+            addMarker(latlng, "Meetup location","",BitmapDescriptorFactory.HUE_YELLOW);
         }
     }
 
