@@ -32,11 +32,13 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
             if (stuff.getString("type").equals("MeetupInitiated")) {
                 sendNotification(context, stuff.getString("type"), stuff.getString("meeting"));
             } else {
-                Intent newIntent = new Intent("MeetupFulfilledNotification");
+                Intent newIntent = new Intent();
 
-                newIntent.putExtra("meetup", stuff.getString("meeting"));
-                context.sendBroadcast(newIntent);
-
+                try {
+                    MapsActivity.addMarkersForMeeting(new JSONObject(stuff.getString("meeting")));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
         }
@@ -50,6 +52,7 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
                 context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         Intent intent = new Intent(context, MapsActivity.class);
+        intent.putExtra("isInitiated", true);
         intent.putExtra("meeting", meeting);
 
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0,

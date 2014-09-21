@@ -126,7 +126,29 @@ public class MapsActivity extends FragmentActivity {
             if (meeting != null) {
                 addMarkersForMeeting(meeting);
             }
-            
+
+            if (intent.getBooleanExtra("isInitiated", false)) {
+                // Send our location to server
+
+                JSONObject coords = new JSONObject();
+                coords.put("lat", 43);
+                coords.put("lon", -80);
+
+                RestApi.getInstance().request(this, "meetup/"+meeting.getString("_id")+"/addLocation", RestApi.Method.POST, coords, new com.android.volley.Response.Listener() {
+                    @Override
+                    public void onResponse(Object o) {
+                        JSONObject response = (JSONObject) o;
+
+                        try {
+                            JSONObject meeting = response.getJSONObject("meeting");
+                            addMarkersForMeeting(meeting);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -151,7 +173,7 @@ public class MapsActivity extends FragmentActivity {
 
     }
 
-    private void addMarkersForMeeting(JSONObject meeting) throws JSONException {
+    public static void addMarkersForMeeting(JSONObject meeting) throws JSONException {
         if (meeting == null) {
             return;
         }
