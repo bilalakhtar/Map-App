@@ -30,14 +30,3 @@ public class Friend
 
 }
 
-public class FriendsListAdapter extends ArrayAdapter<Friend> {
-
-    public FriendsListAdapter(Context context, int resource, List<Friend> objects) {
-        super(context, resource, objects);
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        return super.getView(position, convertView, parent);
-    }
-}

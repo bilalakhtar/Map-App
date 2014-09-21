@@ -3,6 +3,7 @@ package com.hack.letsmeet;
 import android.app.AlertDialog;
 //import android.app.Fragment;
 //import android.app.FragmentManager;
+import android.app.ListActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -36,14 +37,14 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Created by edward on 20/09/14.
  */
-public class PickerActivity extends FragmentActivity {
+public class PickerActivity extends ListActivity {
     public static final Uri FRIEND_PICKER = Uri.parse("picker://friend");
-    private FriendPickerFragment friendPickerFragment;
 
     public static final String SENDER_ID="831680996472";
 
@@ -60,6 +61,8 @@ public class PickerActivity extends FragmentActivity {
 
     Context context;
 
+    FriendsListAdapter listAdapter;
+
     private static final ArrayList<String> PERMISSIONS = new ArrayList<String>() {
 
         {
@@ -74,13 +77,14 @@ public class PickerActivity extends FragmentActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.pickers);
+
+        listAdapter = new FriendsListAdapter(this, android.R.layout.simple_list_item_1, new ArrayList<Friend>());
+        setListAdapter(listAdapter);
 
         context = getApplicationContext();
 
         Bundle args = getIntent().getExtras();
-        FragmentManager manager = getSupportFragmentManager();
-        Fragment fragmentToShow = null;
+
         Uri intentUri = getIntent().getData();
 
         new Request(
@@ -93,20 +97,22 @@ public class PickerActivity extends FragmentActivity {
                     public void onCompleted(com.facebook.Response response) {
                      GraphObject graphObject  = response.getGraphObject();
                      JSONArray data = (JSONArray) graphObject.getProperty("data");
-
-
+                     List<Friend> friendsList = new ArrayList<Friend>();
 
                         try {
-                            data.getJSONObject(0).get("name");
+                            for (int i=0;i<data.length();i++) {
+                                JSONObject object = data.getJSONObject(i);
+
+                                Friend friend = new Friend(object.getString("id"), object.getString("name"));
+                                friendsList.add(friend);
+                            }
 
                         }catch (JSONException e){
-
+                            e.printStackTrace();
                         }
-                        /* m_name = name;
-                         m_id = userId;
 
-    */
                         Log.d("g", data.toString());
+                        listAdapter.notifyDataSetChanged();
                     }
                 }
         ).executeAsync();
@@ -120,28 +126,7 @@ public class PickerActivity extends FragmentActivity {
         });
 
         //if (FRIEND_PICKER.equals(intentUri)) {
-            if (savedInstanceState == null) {
-                friendPickerFragment = new FriendPickerFragment(args);
-            } else {
-                friendPickerFragment = (FriendPickerFragment) manager.findFragmentById(R.id.picker_fragment);
-            }
-            // Set the listener to handle errors
-            friendPickerFragment.setOnErrorListener(new PickerFragment.OnErrorListener() {
-                @Override
-                public void onError(PickerFragment<?> fragment,
-                                    FacebookException error) {
-                    PickerActivity.this.onError(error);
-                }
-            });
-            // Set the listener to handle button clicks
-            friendPickerFragment.setOnDoneButtonClickedListener(
-                    new PickerFragment.OnDoneButtonClickedListener() {
-                        @Override
-                        public void onDoneButtonClicked(PickerFragment<?> fragment) {
-                            startActivity(new Intent(PickerActivity.this, MapsActivity.class));
-                        }
-                    });
-            fragmentToShow = friendPickerFragment;
+
 
         /*} else {
             // Nothing to do, finish
@@ -149,15 +134,6 @@ public class PickerActivity extends FragmentActivity {
             //finish();
             //return;
         }*/
-
-        friendPickerFragment.setTitleText("Choose a Friend");
-        friendPickerFragment.setMultiSelect(false);
-
-
-
-        manager.beginTransaction()
-                .replace(R.id.picker_fragment, fragmentToShow)
-                .commit();
 
 
         if (checkPlayServices()) {
@@ -308,12 +284,6 @@ public class PickerActivity extends FragmentActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (FRIEND_PICKER.equals(getIntent().getData())) {
-            try {
-                friendPickerFragment.loadData(false);
-            } catch (Exception ex) {
-                onError(ex);
-            }
-        }
+
     }
 }
