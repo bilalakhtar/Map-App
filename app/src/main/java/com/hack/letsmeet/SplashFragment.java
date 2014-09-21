@@ -38,6 +38,8 @@ public class SplashFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.splash,
                 container, false);
+
+        getActivity().getActionBar().hide();
         return view;
     }
 }

@@ -21,7 +21,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="#FB5820" >
+    android:background="#0890b7" >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -34,7 +34,7 @@
             android:layout_weight="1"
             android:layout_gravity="center"
             android:padding="50dp"
-            android:src="@drawable/logo"/>
+            android:src="@drawable/splash"/>
 
         <com.facebook.widget.LoginButton
             android:id="@+id/login_button"
@@ -42,18 +42,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="30dp"
-            android:layout_marginBottom="30dp" />
-
-        <TextView
-            android:id="@+id/skip_login_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="skip login"
-            android:textSize="12sp"
-            android:textColor="#EAFEA7"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"
             android:layout_marginBottom="30dp" />
 
     </LinearLayout>

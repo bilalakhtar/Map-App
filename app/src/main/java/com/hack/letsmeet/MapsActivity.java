@@ -36,6 +36,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 public class MapsActivity extends FragmentActivity {
 
@@ -46,6 +47,8 @@ public class MapsActivity extends FragmentActivity {
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private String[] listItems = {"Food"};
+    private Places places;
+    public Marker userMarker;
     public static HashMap<String, Marker> markerMap = new HashMap<String, Marker>();
 
 
@@ -53,16 +56,26 @@ public class MapsActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+
+        places = new Places();
+        List<String> list = new ArrayList<String>();
+        list.add("food");
+
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         userLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
         MapsInitializer.initialize(this);
 
         setUpMapIfNeeded();
+
+        places.placeSearch(userLocation.getLatitude(), userLocation.getLongitude(), list,200,mMap, this);
+
+
         drawerList = (ListView) findViewById(R.id.left_drawer);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item,listItems));
+                R.layout.drawer_list_item,list));
         drawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         actionBarDrawerToggle = new ActionBarDrawerToggle(
@@ -106,10 +119,6 @@ public class MapsActivity extends FragmentActivity {
         ).executeAsync();*/
 
         //call places API
-        Places places = new Places();
-        List<String> list = new ArrayList<String>();
-        list.add("food");
-        places.placeSearch(userLocation.getLatitude(), userLocation.getLongitude(), list,1500,mMap);
 
         Intent intent = getIntent();
         try {
@@ -129,9 +138,16 @@ public class MapsActivity extends FragmentActivity {
 
     }
 
+    public void refreshAdapter(){
+        //TODO make this BETTER, MUCH MUCH MUCH BETTER
+        drawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, places.placeNames));
+
+
+    }
+
     public static void addMarker(LatLng latLng, String name, String snippet) {
 
-       addMarker(latLng,name,snippet,BitmapDescriptorFactory.HUE_RED);
+       addMarker(latLng, name, snippet, BitmapDescriptorFactory.HUE_RED);
 
     }
 
@@ -161,6 +177,8 @@ public class MapsActivity extends FragmentActivity {
 
     public static void addMarker(LatLng latLng, String name, String snippet, float color){
         Marker marker = mMap.addMarker(new MarkerOptions().position(latLng).title(name).snippet(snippet).icon(BitmapDescriptorFactory.defaultMarker(color)));
+
+        markerMap.put(name, marker);
     }
 
     @Override
@@ -200,7 +218,14 @@ public class MapsActivity extends FragmentActivity {
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView parent, View view, int position, long id) {
-            //selectItem(position);
+            selectItem(position);
+        }
+
+        private void selectItem(int position) {
+            Marker marker = markerMap.get(places.placeNames.get(position));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(),18));
+            drawerLayout.closeDrawer(drawerList);
+            marker.showInfoWindow();
         }
     }
     /**
@@ -248,8 +273,10 @@ public class MapsActivity extends FragmentActivity {
         }
 
         LatLng userLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
-        mMap.addMarker(new MarkerOptions().position(new LatLng(userLocation.getLatitude(),
-                userLocation.getLongitude())).title("Marker"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng,14));
+
+
+        userMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(userLocation.getLatitude(),
+                userLocation.getLongitude())).title("Me"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng,18));
     }
 }

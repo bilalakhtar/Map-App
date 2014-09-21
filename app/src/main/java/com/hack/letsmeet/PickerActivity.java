@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 //import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -27,6 +28,7 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Created by edward on 20/09/14.
@@ -85,7 +87,7 @@ public class PickerActivity extends FragmentActivity {
                     new PickerFragment.OnDoneButtonClickedListener() {
                         @Override
                         public void onDoneButtonClicked(PickerFragment<?> fragment) {
-                            finishActivity();
+                            startActivity(new Intent(PickerActivity.this, MapsActivity.class));
                         }
                     });
             fragmentToShow = friendPickerFragment;
@@ -96,6 +98,11 @@ public class PickerActivity extends FragmentActivity {
             //finish();
             //return;
         }*/
+
+        friendPickerFragment.setTitleText("Choose a Friend");
+        friendPickerFragment.setMultiSelect(false);
+
+
 
         manager.beginTransaction()
                 .replace(R.id.picker_fragment, fragmentToShow)
