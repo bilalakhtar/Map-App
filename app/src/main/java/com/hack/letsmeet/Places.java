@@ -257,7 +257,7 @@ public class Places {
            }
 
             mapActivityContext.refreshAdapter();
-           mapActivityContext.userMarker.showInfoWindow();
+           //mapActivityContext.userMarker.showInfoWindow();
 
 
 

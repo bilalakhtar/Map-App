@@ -54,6 +54,7 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
         Intent intent = new Intent(context, MapsActivity.class);
         intent.putExtra("isInitiated", true);
         intent.putExtra("meeting", meeting);
+        intent.setAction("com.hack.letsmeet.MeetupInitiated");
 
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
                 intent, 0);
