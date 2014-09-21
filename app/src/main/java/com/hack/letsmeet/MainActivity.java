@@ -99,7 +99,8 @@ public class MainActivity extends Activity {
                 // If the session state is open:
                 // Show the authenticated fragment
              //   showFragment(SELECTION, false);
-                
+
+                signupAndRegisterDevice();
                 launchMap();
 
             } else if (state.isClosed()) {
@@ -108,6 +109,18 @@ public class MainActivity extends Activity {
                 showFragment(SPLASH, false);
             }
         }
+    }
+
+    private void signupAndRegisterDevice() {
+        RestApi restApi = RestApi.getInstance();
+
+        Request.newGraphPathRequest(Session.getActiveSession(), "me", new Request.Callback(){
+
+            @Override
+            public void onCompleted(Response response) {
+                Log.d("MainActivity", response.toString());
+            }
+        }).executeAsync();
     }
 
     @Override
@@ -162,7 +175,7 @@ public class MainActivity extends Activity {
 
     private void launchMap(){
         finish();
-        startActivity(new Intent(this, MapsActivity.class));
+        startActivity(new Intent(this, PickerActivity.class));
     }
 
 }
