@@ -69,13 +69,13 @@ public class MapsActivity extends FragmentActivity {
 
         setUpMapIfNeeded();
 
-        places.placeSearch(userLocation.getLatitude(), userLocation.getLongitude(), list,200,mMap, this);
+        places.placeSearch(userLocation.getLatitude(), userLocation.getLongitude(), list, 200, mMap, this);
 
 
         drawerList = (ListView) findViewById(R.id.left_drawer);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item,list));
+                R.layout.drawer_list_item, list));
         drawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         actionBarDrawerToggle = new ActionBarDrawerToggle(
@@ -86,13 +86,17 @@ public class MapsActivity extends FragmentActivity {
                 R.string.drawer_close  /* "close drawer" description */
         ) {
 
-            /** Called when a drawer has settled in a completely closed state. */
+            /**
+             * Called when a drawer has settled in a completely closed state.
+             */
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
                 //getActionBar().setTitle(mTitle);
             }
 
-            /** Called when a drawer has settled in a completely open state. */
+            /**
+             * Called when a drawer has settled in a completely open state.
+             */
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 //getActionBar().setTitle(mDrawerTitle);
@@ -119,8 +123,12 @@ public class MapsActivity extends FragmentActivity {
         ).executeAsync();*/
 
         //call places API
+    }
 
-        Intent intent = getIntent();
+    @Override
+    protected void onNewIntent(Intent intent)
+    {
+        super.onNewIntent(intent);
         try {
             JSONObject meeting = new JSONObject(intent.getStringExtra("meeting"));
             if (meeting != null) {
