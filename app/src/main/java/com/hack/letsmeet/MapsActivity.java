@@ -24,22 +24,25 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class MapsActivity extends FragmentActivity {
 
-    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    public static GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private LocationManager locationManager;
     private Location userLocation;
     private ListView drawerList;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private String[] listItems = {"Food"};
-    private HashMap<String, Marker> markerMap = new HashMap<String, Marker>();
+    public static HashMap<String, Marker> markerMap = new HashMap<String, Marker>();
 
 
     @Override
@@ -97,16 +100,30 @@ public class MapsActivity extends FragmentActivity {
                     }
                 }
         ).executeAsync();*/
+
+        //call places API
+        Places places = new Places();
+        List<String> list = new ArrayList<String>();
+        list.add("food");
+        places.placeSearch(userLocation.getLatitude(), userLocation.getLongitude(), list,1500,mMap);
     }
 
-    private void addMarker(LatLng latLng, String name){
+    public static void addMarker(LatLng latLng, String name){
 
-        Marker marker = mMap.addMarker(new MarkerOptions().position(latLng).title(name).snippet(name + " /n status is awesome"));
-
-        markerMap.put(name, marker);
-
+        addMarker(latLng,name,"",BitmapDescriptorFactory.HUE_RED);
 
     }
+
+    public static void addMarker(LatLng latLng, String name, String snippet) {
+
+       addMarker(latLng,name,snippet,BitmapDescriptorFactory.HUE_RED);
+
+    }
+
+    public static void addMarker(LatLng latLng, String name, String snippet, float color){
+        Marker marker = mMap.addMarker(new MarkerOptions().position(latLng).title(name).snippet(snippet).icon(BitmapDescriptorFactory.defaultMarker(color)));
+    }
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
