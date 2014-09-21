@@ -1,6 +1,7 @@
 package com.hack.letsmeet;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.location.Location;
 import android.location.LocationManager;
@@ -28,6 +29,9 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -106,6 +110,17 @@ public class MapsActivity extends FragmentActivity {
         List<String> list = new ArrayList<String>();
         list.add("food");
         places.placeSearch(userLocation.getLatitude(), userLocation.getLongitude(), list,1500,mMap);
+
+        Intent intent = getIntent();
+        try {
+            JSONObject meeting = new JSONObject(intent.getStringExtra("meeting"));
+            if (meeting != null) {
+                addMarkersForMeeting(meeting);
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void addMarker(LatLng latLng, String name){
@@ -118,6 +133,30 @@ public class MapsActivity extends FragmentActivity {
 
        addMarker(latLng,name,snippet,BitmapDescriptorFactory.HUE_RED);
 
+    }
+
+    private void addMarkersForMeeting(JSONObject meeting) throws JSONException {
+        if (meeting == null) {
+            return;
+        }
+
+        if (meeting.getJSONObject("senderLocation") != null) {
+            JSONObject loc = meeting.getJSONObject("receiverLocation");
+            LatLng latlng = new LatLng(loc.getDouble("lat"), loc.getDouble("lon"));
+            addMarker(latlng, "Sender location");
+        }
+
+        if (meeting.getJSONObject("receiverLocation") != null) {
+            JSONObject loc = meeting.getJSONObject("receiverLocation");
+            LatLng latlng = new LatLng(loc.getDouble("lat"), loc.getDouble("lon"));
+            addMarker(latlng, "receiver location");
+        }
+
+        if (meeting.getJSONObject("meetupLocation") != null) {
+            JSONObject loc = meeting.getJSONObject("meetupLocation");
+            LatLng latlng = new LatLng(loc.getDouble("lat"), loc.getDouble("lon"));
+            addMarker(latlng, "Meetup location");
+        }
     }
 
     public static void addMarker(LatLng latLng, String name, String snippet, float color){
