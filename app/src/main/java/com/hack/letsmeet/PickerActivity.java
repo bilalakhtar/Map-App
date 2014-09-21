@@ -19,6 +19,9 @@ import android.util.Log;
 
 import com.android.volley.Response;
 import com.facebook.FacebookException;
+import com.facebook.HttpMethod;
+import com.facebook.Request;
+import com.facebook.Session;
 import com.facebook.widget.FriendPickerFragment;
 import com.facebook.widget.PickerFragment;
 import com.google.android.gms.common.ConnectionResult;
@@ -28,6 +31,8 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -48,6 +53,17 @@ public class PickerActivity extends FragmentActivity {
 
     Context context;
 
+    private static final ArrayList<String> PERMISSIONS = new ArrayList<String>() {
+
+        {
+            add("user_friends");
+
+            add("public_profile");
+        }
+    };
+
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +75,20 @@ public class PickerActivity extends FragmentActivity {
         FragmentManager manager = getSupportFragmentManager();
         Fragment fragmentToShow = null;
         Uri intentUri = getIntent().getData();
+
+/*
+        new Request(
+                Session.getActiveSession(),
+                "/me/friends",
+                null,
+                HttpMethod.GET,
+                new Request.Callback() {
+                    @Override
+                    public void onCompleted(com.facebook.Response response) {
+                       //response.getGraphObject().getPropertyAsList("user_friends","user_profile"));
+                    }
+                }
+        ).executeAsync();*/
 
         RestApi.getInstance()
                 .request(this, "test-auth", RestApi.Method.GET, new JSONObject(), new com.android.volley.Response.Listener() {
