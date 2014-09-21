@@ -9,10 +9,13 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 
 import com.facebook.FacebookException;
 import com.facebook.widget.FriendPickerFragment;
 import com.facebook.widget.PickerFragment;
+
+import org.json.JSONObject;
 
 /**
  * Created by edward on 20/09/14.
@@ -31,7 +34,15 @@ public class PickerActivity extends FragmentActivity {
         Fragment fragmentToShow = null;
         Uri intentUri = getIntent().getData();
 
-        if (FRIEND_PICKER.equals(intentUri)) {
+        RestApi.getInstance()
+                .request(this, "test-auth", RestApi.Method.GET, new JSONObject(), new com.android.volley.Response.Listener() {
+            @Override
+            public void onResponse(Object o) {
+                Log.d("MainActivity", o.toString());
+            }
+        });
+
+        //if (FRIEND_PICKER.equals(intentUri)) {
             if (savedInstanceState == null) {
                 friendPickerFragment = new FriendPickerFragment(args);
             } else {
@@ -55,12 +66,12 @@ public class PickerActivity extends FragmentActivity {
                     });
             fragmentToShow = friendPickerFragment;
 
-        } else {
+        /*} else {
             // Nothing to do, finish
             setResult(RESULT_CANCELED);
-            finish();
-            return;
-        }
+            //finish();
+            //return;
+        }*/
 
         manager.beginTransaction()
                 .replace(R.id.picker_fragment, fragmentToShow)

@@ -1,9 +1,11 @@
 package com.hack.letsmeet;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.android.volley.*;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONObject;
 
@@ -20,6 +22,8 @@ public class RestApi {
         GET, POST
     };
 
+    private RequestQueue queue;
+
     private String userid = "";
     private String accessToken = "";
 
@@ -34,32 +38,43 @@ public class RestApi {
     private RestApi() {
 
     }
+    public void request(Context context, String endpoint, Method method, JSONObject params, Response.Listener responseHandler) {
+        if (userid.length() > 0 && accessToken.length() > 0) {
 
-    public void request(String endpoint, Method method, JSONObject params, Response.Listener responseHandler) {
+            request(context, endpoint, method, params, responseHandler, true);
+        } else {
+            request(context, endpoint, method, params, responseHandler, false);
+        }
+    }
+
+    public void request(Context context, String endpoint, Method method, JSONObject params, Response.Listener responseHandler, final Boolean authenticated) {
+        RequestQueue queue = Volley.newRequestQueue(context);
         Response.ErrorListener errorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                Log.e("RestApi", volleyError.getMessage());
+                Log.e("RestApi", new String(volleyError.networkResponse.data));
             }
         };
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,
-                BASE_URL+endpoint,
-                params,
-                responseHandler,
-                errorListener) {
-            @Override
-            public HashMap<String, String> getHeaders() {
-                HashMap<String, String> params = new HashMap<String, String>();
-                if (userid.length() > 0 && accessToken.length() > 0) {
-                    params.put("X-WWW-Authenticate", userid + " " + accessToken);
+        JsonObjectRequest request = null;
+
+        if (method == Method.GET) {
+            request = new JsonObjectRequest(Request.Method.GET,
+                    BASE_URL + endpoint,
+                    params,
+                    responseHandler,
+                    errorListener) {
+                @Override
+                public HashMap<String, String> getHeaders() {
+                    HashMap<String, String> params = new HashMap<String, String>();
+                    if (authenticated) {
+                        params.put("X-WWW-Authenticate", userid + " " + accessToken);
+                    }
+
+                    return params;
                 }
-
-                return params;
-            }
-        };
-
-        if (method == Method.POST) {
+            };
+        } else if (method == Method.POST) {
             request = new JsonObjectRequest(Request.Method.POST,
                     BASE_URL+endpoint,
                     params,
@@ -68,7 +83,7 @@ public class RestApi {
                 @Override
                 public HashMap<String, String> getHeaders() {
                     HashMap<String, String> params = new HashMap<String, String>();
-                    if (userid.length() > 0 && accessToken.length() > 0) {
+                    if (authenticated) {
                         params.put("X-WWW-Authenticate", userid + " " + accessToken);
                     }
 
@@ -76,6 +91,8 @@ public class RestApi {
                 }
             };
         }
+
+        queue.add(request);
 
     }
 

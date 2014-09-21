@@ -123,17 +123,23 @@ public class MainActivity extends Activity {
                 Log.d("MainActivity", response.toString());
 
                 String userid = (String) response.getGraphObject().getProperty("id");
+
+                try {
+                    JSONObject params = new JSONObject();
+                    params.put("username", userid);
+
+                    restApi.request(MainActivity.this, "signup", RestApi.Method.POST, params, new com.android.volley.Response.Listener() {
+                        @Override
+                        public void onResponse(Object o) {
+                            Log.d("MainActivity", o.toString());
+                        }
+                    }, false);
+                } catch (Exception e) {
+
+                }
                 String token = Session.getActiveSession().getAccessToken();
 
                 restApi.setAuth(userid, token);
-
-                restApi.request("test-auth", RestApi.Method.GET, new JSONObject(), new com.android.volley.Response.Listener() {
-                    @Override
-                    public void onResponse(Object o) {
-                        Log.d("MainActivity", o.toString());
-                        MainActivity.this.launchPicker();
-                    }
-                });
 
                 MainActivity.this.launchPicker();
             }
