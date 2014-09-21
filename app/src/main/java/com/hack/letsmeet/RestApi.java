@@ -14,7 +14,7 @@ import java.util.HashMap;
  */
 public class RestApi {
     private static RestApi instance = null;
-    private static final String BASE_URL="http://10.20.182.3:8080/";
+    private static final String BASE_URL="http://10.21.217.205:8080/";
 
     public enum Method {
         GET, POST

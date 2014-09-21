@@ -127,13 +127,13 @@ public class MainActivity extends Activity {
 
                 restApi.setAuth(userid, token);
 
-                /*restApi.request("test-auth", RestApi.Method.GET, new JSONObject(), new com.android.volley.Response.Listener() {
+                restApi.request("test-auth", RestApi.Method.GET, new JSONObject(), new com.android.volley.Response.Listener() {
                     @Override
                     public void onResponse(Object o) {
                         Log.d("MainActivity", o.toString());
                         MainActivity.this.launchPicker();
                     }
-                });*/
+                });
 
                 MainActivity.this.launchPicker();
             }
